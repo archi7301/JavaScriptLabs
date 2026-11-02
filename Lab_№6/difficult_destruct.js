@@ -1,3 +1,65 @@
+const data = {
+  project: {
+    info: {
+      name: 'Digital Space',
+      version: '2.4.0',
+      authors: [
+        {
+          id: 1,
+          profile: {
+            name: 'Анна',
+            contacts: {
+              email: 'anna@example.com',
+              social: {
+                telegram: '@anna_dev',
+              },
+            },
+          },
+        },
+        {
+          id: 2,
+          profile: {
+            name: 'Иван',
+            contacts: {
+              email: 'ivan@example.com',
+              social: {
+                telegram: '@ivan_dev',
+              },
+            },
+          },
+        },
+      ],
+    },
+    settings: {
+      interface: {
+        language: 'ru',
+        theme: {
+          name: 'dark',
+          colors: {
+            primary: '#6c5ce7',
+          },
+        },
+      },
+      features: {
+        registration: true,
+        notifications: true,
+        analytics: false,
+      },
+    },
+    statistics: {
+      users: {
+        total: 1250,
+        activity: {
+          today: 145,
+          week: 684,
+          month: 1027,
+        },
+      },
+    },
+  },
+};
+
+
 const {
   project: {
     info: {
