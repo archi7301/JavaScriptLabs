@@ -1,4 +1,3 @@
-
 function ShoppingCart(customerName) 
 {
     this.customerName = customerName;
@@ -7,44 +6,37 @@ function ShoppingCart(customerName)
     this.discount = 0;
 }
 
-// Добавление товара в корзину
 ShoppingCart.prototype.addItem = function (product, quantity) 
 {
-    // Проверка количества
     if (!Number.isInteger(quantity) || quantity <= 0) 
     {
         console.log("Ошибка: количество должно быть положительным целым числом.");
         return;
     }
 
-    // Проверка доступности товара
     if (product.isAvailable === false) 
     {
         console.log("Ошибка: товар недоступен.");
         return;
     }
 
-    // Поиск товара с таким же ID
     const existingItem = this.items.find(
         item => item.product.id === product.id
     );
 
-    if (existingItem) 
+    if (existingItem)
+        existingItem.quantity += quantity
+
+    else
     {
-        // Если товар уже есть, увеличиваем количество
-        existingItem.quantity += quantity;
-    } 
-    else 
-    {
-        // Добавляем новую запись, не изменяя исходный объект товара
         this.items.push({
-            product: product,
-            quantity: quantity
-        });
+            product : product,
+            quantity : quantity
+        })
     }
+
 };
 
-// Удаление товара из корзины
 ShoppingCart.prototype.removeItem = function (productId) 
 {
     this.items = this.items.filter(
@@ -52,7 +44,6 @@ ShoppingCart.prototype.removeItem = function (productId)
     );
 };
 
-// Изменение количества товара
 ShoppingCart.prototype.changeQuantity = function (productId, quantity) 
 {
     if (!Number.isInteger(quantity) || quantity <= 0) 
@@ -69,14 +60,12 @@ ShoppingCart.prototype.changeQuantity = function (productId, quantity)
         existingItem.quantity = quantity;
 };
 
-// Установка скидки
 ShoppingCart.prototype.setDiscount = function (percent) 
 {
     if (
         typeof percent !== "number" ||
         !Number.isFinite(percent) ||
-        percent < 0 ||
-        percent > 100
+        percent < 0 || percent > 100
     ) 
     {
         console.log("Ошибка: скидка должна находиться в диапазоне от 0 до 100.");
@@ -86,24 +75,17 @@ ShoppingCart.prototype.setDiscount = function (percent)
     this.discount = percent;
 };
 
-// Расчёт стоимости без скидки
 ShoppingCart.prototype.getTotalBeforeDiscount = function () 
 {
-    return this.items.reduce(
-        (total, item) => total + item.product.price * item.quantity,
-        0
-    );
+    return this.items.reduce((total, item) => total + item.product.price * item.quantity, 0);
 };
 
-// Расчёт стоимости с учётом скидки
 ShoppingCart.prototype.getTotal = function () 
 {
     const total = this.getTotalBeforeDiscount();
-
     return total * (1 - this.discount / 100);
 };
 
-// Формирование описания товаров
 ShoppingCart.prototype.getSummary = function () 
 {
     return this.items.map(item => {
@@ -111,17 +93,9 @@ ShoppingCart.prototype.getSummary = function ()
     });
 };
 
-
-// Создание товаров
-const laptop = new Product(1, "Laptop", 1500, "Electronics");
-const mouse = new Product(2, "Mouse", 50, "Accessories");
-const keyboard = new Product(3, "Keyboard", 120, "Accessories");
-
-// Создание корзин
 const cart1 = new ShoppingCart("Artem");
 const cart2 = new ShoppingCart("Alex");
 
-// Добавление товаров
 cart1.addItem(laptop, 1);
 cart1.addItem(mouse, 2);
 cart1.addItem(mouse, 3);
@@ -129,14 +103,11 @@ cart1.addItem(mouse, 3);
 cart2.addItem(keyboard, 1);
 cart2.addItem(mouse, 1);
 
-// Изменение количества
 cart1.changeQuantity(1, 2);
 
-// Установка скидки
 cart1.setDiscount(10);
 cart2.setDiscount(5);
 
-// Вывод информации
 console.log("Корзина 1:", cart1.getSummary());
 console.log("Стоимость без скидки:", cart1.getTotalBeforeDiscount());
 console.log("Стоимость со скидкой:", cart1.getTotal());
@@ -145,10 +116,8 @@ console.log("Корзина 2:", cart2.getSummary());
 console.log("Стоимость без скидки:", cart2.getTotalBeforeDiscount());
 console.log("Стоимость со скидкой:", cart2.getTotal());
 
-// Проверка удаления
 cart1.removeItem(2);
 console.log("Корзина 1 после удаления:", cart1.getSummary());
 
-// Проверка независимости корзин
 console.log("Товары в корзине 1:", cart1.items.length);
 console.log("Товары в корзине 2:", cart2.items.length);

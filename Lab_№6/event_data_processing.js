@@ -40,7 +40,6 @@ const event = {
   ],
 };
 
-// 1. Вложенная деструктуризация объекта
 const {
   id,
   title,
@@ -65,20 +64,17 @@ const {
   participants
 } = event;
 
-// Вспомогательное преобразование даты из '2026-10-15' в '15.10.2026'
 const formattedDate = date.split('-').reverse().join('.');
 
-// 2. Формирование и вывод итоговой строки
 const infoString = `${title} пройдёт ${formattedDate} с ${start} до ${end} по адресу: 
 ${city}, ${street}, ${buildingNumber}, ${buildingName}, 
 аудитория ${roomNumber}. Организатор: ${firstName} ${lastName}.`;
 
 console.log(infoString);
 
-// 3. Фильтрация и маппинг участников с деструктуризацией в параметрах функций
 const confirmedParticipants = participants
   .filter(({ status }) => status === 'confirmed')
   .map(({ name }) => name);
 
 console.log('\nСписок подтвержденных участников:');
-console.log(confirmedParticipants); // [ 'Анна', 'Ольга' ]
+console.log(confirmedParticipants);

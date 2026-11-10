@@ -1,11 +1,9 @@
 function* createBatches(items, batchSize) {
-    if (!Array.isArray(items)) {
+    if (!Array.isArray(items))
         throw new TypeError('items должен быть массивом');
-    }
 
-    if (!Number.isInteger(batchSize) || batchSize <= 0) {
+    if (!Number.isInteger(batchSize) || batchSize <= 0)
         throw new RangeError('batchSize должен быть положительным целым числом');
-    }
 
     for (let start = 0; start < items.length; start += batchSize) {
         const batch = items.slice(start, start + batchSize);

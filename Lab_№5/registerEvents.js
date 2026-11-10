@@ -6,7 +6,6 @@ function createRegistrationHandler(eventId, callback) {
 
 function registerForEvent(eventId, event) {
     console.log(`Регистрация на мероприятие ${eventId}`);
-
     console.log('Тип события:', event?.type);
 }
 

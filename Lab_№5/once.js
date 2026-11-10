@@ -3,11 +3,11 @@ function once(callabck) {
     let result;
 
     return function (...args) {
-        if (hasBeenCalled === false) {
+        if (!hasBeenCalled)
+        {
             hasBeenCalled = true;
             result = callabck(...args);
         }
-
         return result;
     }
 }

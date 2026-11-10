@@ -63,11 +63,9 @@ const data = {
 const {
   project: {
     info: {
-      name: projectName,
-      version,
+      name: projectName, version,
       authors: [
-        firstAuthor,
-        ...otherAuthors
+        firstAuthor, ...otherAuthors
       ]
     },
     settings: {
