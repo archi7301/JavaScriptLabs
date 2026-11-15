@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music & Me — лабораторная №9</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="models.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header><p class="eyebrow">ТВОЯ МУЗЫКА. ТВОЁ ПРОСТРАНСТВО.</p><h1>music & me<span>♪</span></h1><p>Каталог композиций и любимые треки в одном месте.</p></header>
+  <main>
+    <section class="toolbar" aria-label="Поиск и фильтрация">
+      <label>Поиск<input type="search" placeholder="Название или исполнитель" disabled></label>
+      <label>Жанр<select disabled><option>Все жанры</option><option>Synthwave</option><option>Pop</option><option>Rock</option><option>Acoustic</option></select></label>
+      <p class="hint">Лабораторная №9: отображение данных. Управление пока не подключено.</p>
+    </section>
+    <div class="layout">
+      <section aria-labelledby="catalog-title"><div class="section-heading"><h2 id="catalog-title">Каталог</h2><span id="catalog-count"></span></div><div id="catalog" class="catalog"></div></section>
+      <section class="playlist-panel" aria-labelledby="playlist-title"><h2 id="playlist-title">Мой плейлист</h2><p id="playlist-summary" class="hint"></p><ol id="playlist" class="playlist"></ol></section>
+    </div>
+    <section class="player" aria-label="Проигрыватель"><div><strong>Сейчас ничего не воспроизводится</strong><p class="hint">Аудиофайлы не подключены</p></div><button type="button" disabled>Предыдущая</button><button type="button" disabled>Воспроизвести</button><button type="button" disabled>Следующая</button></section>
+  </main>
+  <footer>Лабораторная работа №9 · Клиентский JavaScript · DOM</footer>
+</body>
+</html>
