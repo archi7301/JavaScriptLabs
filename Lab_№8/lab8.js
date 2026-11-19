@@ -1,11 +1,10 @@
+
 "use strict";
 
-// 1. Базовый класс медиаконтента
 class MediaContent {
-  // Приватный статический счётчик созданных объектов
+  // Счётчик для ID
   static #createdCount = 0;
 
-  // Приватные свойства экземпляра
   #id;
   #title;
   #duration;
@@ -13,7 +12,7 @@ class MediaContent {
   #isAvailable;
 
   constructor(title, duration, filePath, isAvailable = true) {
-    // Проверка входных данных — в конструкторе
+
     if (typeof title !== "string" || title.trim() === "")
       throw new Error("Название не должно быть пустым");
 
@@ -24,7 +23,7 @@ class MediaContent {
       throw new Error("Путь к аудиофайлу не должен быть пустым");
 
     MediaContent.#createdCount++;
-    this.#id = MediaContent.#createdCount; // уникальный идентификатор
+    this.#id = MediaContent.#createdCount;
     this.#title = title.trim();
     this.#duration = Math.round(duration);
     this.#filePath = filePath;
@@ -47,7 +46,7 @@ class MediaContent {
     return this.#filePath;
   }
 
-  // Продолжительность в формате 03:25
+  // Длительность в формате мм:сс
   get formattedDuration() {
     const minutes = Math.floor(this.#duration / 60);
     const seconds = this.#duration % 60;
@@ -73,14 +72,13 @@ class MediaContent {
   }
 }
 
-// 2. Классы композиций и подкастов
 class Track extends MediaContent {
   #artist;
   #album;
   #genre;
 
   constructor(title, duration, filePath, artist, album, genre, isAvailable = true) {
-    // Валидация собственных полей — до super(), чтобы неудачный объект не попал в счётчик
+    // Сначала проверяем исполнителя, потом создаём объект
     if (typeof artist !== "string" || artist.trim() === "")
       throw new Error("Исполнитель не должен быть пустым");
 
@@ -102,7 +100,6 @@ class Track extends MediaContent {
     return this.#genre;
   }
 
-  // Переопределение: Композиция: Night Drive — Neon Lights, 03:25
   getInfo() {
     return `Композиция: ${this.title} — ${this.#artist}, ${this.formattedDuration}`;
   }
@@ -138,19 +135,18 @@ class PodcastEpisode extends MediaContent {
     return this.#episodeNumber;
   }
 
-  // Переопределение: Подкаст: Web Inside, выпуск 12 — Как работает браузер
   getInfo() {
     return `Подкаст: ${this.#podcastName}, выпуск ${this.#episodeNumber} — ${this.title}`;
   }
 }
 
-// 3. Класс плейлиста
+// Плейлист
 class Playlist {
   static #createdCount = 0;
 
   #id;
   #name;
-  #items = []; // приватный массив медиаматериалов
+  #items = [];
 
   constructor(name) {
     if (typeof name !== "string" || name.trim() === "")
@@ -190,7 +186,8 @@ class Playlist {
   }
 
   findItem(id) {
-    return this.#items.find((item) => item.id === id) ?? null;
+    const item = this.#items.find((item) => item.id === id);
+    return item === undefined ? null : item;
   }
 
   hasItem(id) {
@@ -202,10 +199,14 @@ class Playlist {
   }
 
   getTotalDuration() {
-    return this.#items.reduce((sum, item) => sum + item.duration, 0);
+    let total = 0;
+    for (const item of this.#items) {
+      total += item.duration;
+    }
+    return total;
   }
 
-  // Копия массива — внешний код не может изменить внутреннее состояние
+  // Возвращаем копию списка
   get items() {
     return [...this.#items];
   }
@@ -215,7 +216,6 @@ class Playlist {
   }
 }
 
-// 4. Класс проигрывателя
 class Player {
   static STATUS = Object.freeze({
     STOPPED: "остановлен",
@@ -229,7 +229,10 @@ class Player {
   #status = Player.STATUS.STOPPED;
 
   get currentItem() {
-    return this.#queue[this.#currentIndex] ?? null;
+    if (this.#currentIndex === -1) {
+      return null;
+    }
+    return this.#queue[this.#currentIndex] || null;
   }
 
   get status() {
@@ -284,7 +287,7 @@ class Player {
     }
 
     this.#status = Player.STATUS.PAUSED;
-    console.log(`⏸ Пауза: ${this.currentItem.getInfo()}`);
+    console.log(`Пауза: ${this.currentItem.getInfo()}`);
   }
 
   next() {
@@ -299,7 +302,7 @@ class Player {
     }
 
     this.#currentIndex++;
-    this.#afterSwitch("⏭ Следующий");
+    this.#afterSwitch("Следующий");
   }
 
   previous() {
@@ -314,33 +317,30 @@ class Player {
     }
 
     this.#currentIndex--;
-    this.#afterSwitch("⏮ Предыдущий");
+    this.#afterSwitch("Предыдущий");
   }
 
-  // Приватный метод: общая часть переключения элементов
   #afterSwitch(label) {
     console.log(`${label}: ${this.currentItem.getInfo()}`);
-    // если плеер играл или стоял на паузе — продолжаем воспроизведение нового элемента
+    // После переключения запускаем следующий элемент, если плеер был активен
     if (this.#status !== Player.STATUS.STOPPED)
       this.play();
   }
 }
 
-// Демонстрация
 function section(title) {
   console.log(`\n===== ${title} =====`);
 }
 
-// Создание объектов через new
 section("Создание объектов");
 
 const tracks = [
-  new Track("Night Drive", 205, "audio/night-drive.mp3", "Neon Lights", "City Dreams", "Synthwave"),
-  new Track("Ocean Eyes", 187, "audio/ocean-eyes.mp3", "Blue Horizon", "Deep Water", "Pop"),
-  new Track("Iron Road", 243, "audio/iron-road.mp3", "Steel Wolves", "Highway", "Rock"),
-  new Track("Quiet Morning", 156, "audio/quiet-morning.mp3", "Lena Gray", "Sunrise", "Acoustic"),
-  new Track("Digital Rain", 221, "audio/digital-rain.mp3", "Neon Lights", "City Dreams", "Synthwave"),
-  new Track("Last Train", 198, "audio/last-train.mp3", "Steel Wolves", "Highway", "Rock"),
+  new Track("MARCHING", 205, "audio/marching.mp3", "Yeat", "2093", "Dark Rage"),
+  new Track("Money Dance", 187, "audio/money-dance.mp3", "Thaiboy Digital", "Paradise", "Dance Hip-Hop"),
+  new Track("ALL RED", 243, "audio/all-red.mp3", "Playboi Carti", "Whole Lotta Red", "Rage"),
+  new Track("Espresso", 156, "audio/espresso.mp3", "Sabrina Carpenter", "Man's Best Friend", "Pop"),
+  new Track("2sday", 221, "audio/2sday.mp3", "Che", "Empty Clip", "Rage"),
+  new Track("With You", 198, "audio/with-you.mp3", "Linkin Park", "Hybrid Theory", "Punk Rock"),
 ];
 
 const episodes = [
@@ -353,18 +353,18 @@ console.log(`Создано объектов MediaContent: ${MediaContent.getCre
 console.log(`Названия трека и подкаста: «${tracks[0].title}», «${episodes[0].title}»`);
 console.log(`Формат длительности: ${tracks[0].formattedDuration}, ${episodes[0].formattedDuration}`);
 
-// Наследование, super() и instanceof
+// Проверка наследования
 section("Наследование");
 console.log("tracks[0] instanceof Track:", tracks[0] instanceof Track);
 console.log("tracks[0] instanceof MediaContent:", tracks[0] instanceof MediaContent);
 console.log("episodes[0] instanceof Track:", episodes[0] instanceof Track);
 console.log("episodes[0] instanceof MediaContent:", episodes[0] instanceof MediaContent);
 
-// Приватные свойства
+// Геттеры и сеттеры
 section("Приватные свойства и геттеры/сеттеры");
 console.log("Продолжительность через геттер:", tracks[0].duration, "с");
 try {
-  tracks[0].duration = 999; // у геттера нет сеттера → TypeError в strict mode
+  tracks[0].duration = 999;
 }
 catch (e) {
   console.log("Изменить duration нельзя:", e.constructor.name);
@@ -372,7 +372,7 @@ catch (e) {
 console.log("Прямой доступ к #title невозможен, tracks[0]['#title'] =", tracks[0]["#title"]);
 
 console.log("isAvailable до:", tracks[5].isAvailable);
-tracks[5].isAvailable = false; // сеттер
+tracks[5].isAvailable = false;
 console.log("isAvailable после:", tracks[5].isAvailable);
 tracks[5].isAvailable = true;
 try {
@@ -382,7 +382,7 @@ catch (e) {
   console.log("Сеттер isAvailable отклонил значение:", e.message);
 }
 
-// Проверка входных данных в конструкторе
+// Неверные значения
 section("Валидация данных");
 try {
   new Track("", 100, "a.mp3", "Артист", "Альбом", "Жанр");
@@ -406,13 +406,18 @@ catch (e) {
 }
 console.log(`Создано объектов MediaContent (неудачные не считаются): ${MediaContent.getCreatedCount()}`);
 
-// Плейлисты
+// Работа с плейлистами
 section("Плейлисты: добавление и удаление");
 const rockAndSynth = new Playlist("Рок и синтвейв");
 const education = new Playlist("Учёба");
 
-rockAndSynth.addItem(tracks[0]).addItem(tracks[2]).addItem(tracks[4]).addItem(tracks[5]);
-education.addItem(episodes[0]).addItem(episodes[1]).addItem(tracks[3]);
+rockAndSynth.addItem(tracks[0]);
+rockAndSynth.addItem(tracks[2]);
+rockAndSynth.addItem(tracks[4]);
+rockAndSynth.addItem(tracks[5]);
+education.addItem(episodes[0]);
+education.addItem(episodes[1]);
+education.addItem(tracks[3]);
 
 console.log(`«${rockAndSynth.name}»: элементов ${rockAndSynth.itemsCount}, ` +
   `общая длительность ${rockAndSynth.getTotalDuration()} с`);
@@ -440,23 +445,24 @@ console.log("hasItem(tracks[2].id) после удаления:", rockAndSynth.h
 console.log("removeItem(несуществующий id):", rockAndSynth.removeItem(9999));
 console.log("Элементов после удаления:", rockAndSynth.itemsCount);
 
-// items возвращает копию
+// Проверяем, что исходный массив не изменился
 const copy = rockAndSynth.items;
 copy.length = 0;
 console.log("После очистки копии в плейлисте всё ещё элементов:", rockAndSynth.itemsCount);
 
-// clear()
+// Очистка плейлиста
 const temp = new Playlist("Временный");
-temp.addItem(tracks[1]).addItem(tracks[3]);
+temp.addItem(tracks[1]);
+temp.addItem(tracks[3]);
 console.log(`«${temp.name}» до clear(): ${temp.itemsCount}`);
 temp.clear();
 console.log(`«${temp.name}» после clear(): ${temp.itemsCount}`);
 
-// Проигрыватель
+// Работа с плеером
 section("Проигрыватель");
 const player = new Player();
 console.log("Статус:", player.status, "| громкость:", player.volume);
-player.play(); // плейлист не загружен
+player.play();
 
 player.loadPlaylist(education);
 console.log("Текущий элемент:", player.currentItem.getInfo());
@@ -465,22 +471,22 @@ player.pause();
 player.play();
 player.next();
 player.next();
-player.next(); // последний элемент
+player.next();
 player.previous();
 player.pause();
-player.previous(); // на паузе — переключаемся и продолжаем воспроизведение
-player.previous(); // первый элемент
+player.previous();
+player.previous();
 console.log("Статус:", player.status);
 
 section("Громкость");
 player.volume = 80;
 player.volume = 0;
-for (const bad of [101, -1, 50.5, "70"]) {
+for (const value of [101, -1, 50.5, "70"]) {
   try {
-    player.volume = bad;
+    player.volume = value;
   }
   catch (e) {
-    console.log(`volume = ${JSON.stringify(bad)} → ${e.constructor.name}: ${e.message}`);
+    console.log(`volume = ${JSON.stringify(value)} → ${e.constructor.name}: ${e.message}`);
   }
 }
 console.log("Итоговая громкость:", player.volume);
@@ -489,14 +495,14 @@ section("Недоступный элемент");
 tracks[5].isAvailable = false;
 player.loadPlaylist(rockAndSynth);
 player.next();
-player.next(); // дошли до недоступного Last Train
+player.next();
 player.play();
 
-// Полиморфизм
+// Вызов getInfo() для разных типов контента
 section("Полиморфизм");
-const allContent = [...tracks, ...episodes];
+const allContent = tracks.concat(episodes);
 for (const item of allContent) {
-  console.log(item.getInfo()); // без проверки конкретного класса
+  console.log(item.getInfo());
 }
 
 section("Итого");
